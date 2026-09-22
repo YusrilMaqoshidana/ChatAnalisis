@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  # ----------------------------------------------------
+  # Backend Service (FastAPI + SentenceTransformers)
+  # ----------------------------------------------------
+  backend:
+    build:
+      context: ./ChatAnalisis-BE
+      dockerfile: Dockerfile
+    container_name: chatanalisis-backend
+    restart: unless-stopped
+    expose:
+      - "8000"
+    environment:
+      - CORS_ORIGINS=["*"]
+      - MAX_FILE_SIZE_MB=10
+      - ZIP_MAX_EXTRACTED_MB=200
+    volumes:
+      - backend_storage:/app/storage
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/')\" || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ----------------------------------------------------
+  # Frontend Service (Vue 3 + Vite + Nginx Proxy)
+  # ----------------------------------------------------
+  frontend:
+    build:
+      context: ./ChatAnalisis-FE
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_BASE_URL=/
+    container_name: chatanalisis-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      backend:
+        condition: service_started
+
+volumes:
+  backend_storage:
+    driver: local
