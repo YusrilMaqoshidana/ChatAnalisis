@@ -39,6 +39,8 @@ services:
       args:
         - VITE_API_BASE_URL=/
     container_name: chatanalisis-frontend
+    expose:
+      - "80"
     ports:
       - "${FRONTEND_PORT:-3000}:80"
     restart: unless-stopped
