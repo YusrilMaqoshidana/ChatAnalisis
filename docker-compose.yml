@@ -28,6 +28,7 @@ services:
         aliases:
           - backend
           - chatanalisis-backend
+      coolify: {}
 
   # ----------------------------------------------------
   # Frontend Service (Vue 3 + Vite)
@@ -46,6 +47,7 @@ services:
         aliases:
           - frontend
           - chatanalisis-frontend
+      coolify: {}
     depends_on:
       - backend
 
@@ -56,4 +58,6 @@ volumes:
 networks:
   chatanalisis-network:
     name: chatanalisis-network
-
+  coolify:
+    name: coolify
+    external: true
