@@ -41,7 +41,7 @@ services:
       network: host
     container_name: chatanalisis-frontend
     ports:
-      - "${FRONTEND_PORT:-8080}:80"
+      - "${FRONTEND_PORT:-3000}:80"
     restart: unless-stopped
     networks:
       chatanalisis-network:
