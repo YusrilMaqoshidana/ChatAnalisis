@@ -1,15 +1,13 @@
-version: '3.8'
-
 services:
   # ----------------------------------------------------
-  # Backend Service (FastAPI + SentenceTransformers)
+  # Backend Service (FastAPI)
   # ----------------------------------------------------
   backend:
     build:
       context: ./ChatAnalisis-BE
-      dockerfile: Dockerfile
+      network: host
     container_name: chatanalisis-backend
-    restart: unless-stopped
+    # Expose port ke jaringan internal Docker, TIDAK dipublikasikan ke IP publik host
     expose:
       - "8000"
     environment:
@@ -17,31 +15,47 @@ services:
       - MAX_FILE_SIZE_MB=10
       - ZIP_MAX_EXTRACTED_MB=200
     volumes:
-      - backend_storage:/app/storage
-    healthcheck:
-      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/')\" || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
+      - backend_data:/app/storage
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+    restart: unless-stopped
+    networks:
+      chatanalisis-network:
+        aliases:
+          - backend
+          - chatanalisis-backend
 
   # ----------------------------------------------------
-  # Frontend Service (Vue 3 + Vite + Nginx Proxy)
+  # Frontend Service (Vue 3 + Vite)
   # ----------------------------------------------------
   frontend:
     build:
       context: ./ChatAnalisis-FE
-      dockerfile: Dockerfile
       args:
         - VITE_API_BASE_URL=/
+      network: host
     container_name: chatanalisis-frontend
-    restart: unless-stopped
     ports:
-      - "3000:80"
+      - "${FRONTEND_PORT:-8080}:80"
+    restart: unless-stopped
+    networks:
+      chatanalisis-network:
+        aliases:
+          - frontend
+          - chatanalisis-frontend
     depends_on:
-      backend:
-        condition: service_started
+      - backend
 
 volumes:
-  backend_storage:
+  backend_data:
     driver: local
+
+networks:
+  chatanalisis-network:
+    name: chatanalisis-network
+    external: true
