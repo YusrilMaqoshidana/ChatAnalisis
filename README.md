@@ -13,12 +13,12 @@ Browser Client / Internet
      Coolify Proxy
            │
            ▼
-  Frontend Container (Port 80: Nginx)
+  Frontend Container (Port 3000: Nginx)
    ├── File Statis Vue SPA (/)
    └── Reverse Proxy Internal (/api & /analysis)
            │
            ▼ (Private Docker Network)
-  Backend Container (Port 8000: FastAPI) ──► Volume: backend_storage
+  Backend Container (Port 8001: FastAPI) ──► Volume: backend_storage
 ```
 
 ---
@@ -48,7 +48,7 @@ Browser Client / Internet
 ### 1️⃣ Deploy Backend Application (`ChatAnalisis-BE`)
 1. Di Dashboard Coolify, buat Resource baru ➔ Pilih Repository Git **`ChatAnalisis-BE`**.
 2. **Build Pack**: **Dockerfile**.
-3. **Ports Expose**: **`8000`**.
+3. **Ports Expose**: **`8001`**.
 4. **Domains (FQDN)**: **KOSONGKAN / KOSONG** (Backend tidak perlu diekspos ke publik sama sekali).
 5. **Settings ➔ Build Timeout**: Set ke **`1200` detik** (20 menit).
 6. **Storages**: Tambahkan Destination Volume:
@@ -61,7 +61,7 @@ Browser Client / Internet
 ### 2️⃣ Deploy Frontend Application (`ChatAnalisis-FE`)
 1. Buat Resource baru di Project yang sama ➔ Pilih Repository Git **`ChatAnalisis-FE`**.
 2. **Build Pack**: **Dockerfile**.
-3. **Ports Expose**: **`80`**.
+3. **Ports Expose**: **`3000`**.
 4. **Environment Variables**: `VITE_API_BASE_URL=/`
 5. **Domains (FQDN)**: `https://chatanalisis.domainanda.com`
 6. Klik **Deploy**.
@@ -71,7 +71,7 @@ Browser Client / Internet
 ## 🔥 Kenapa Pola Ini Bebas CORS 100%?
 
 - Browser pengguna **HANYA** mengirim request ke domain Frontend (`https://chatanalisis.domainanda.com`).
-- Semua panggilan API (`/api/results/...` dan `/analysis`) diterima oleh Nginx pada Frontend Container, lalu diteruskan secara internal ke `http://chatanalisis-backend:8000`.
+- Semua panggilan API (`/api/results/...` dan `/analysis`) diterima oleh Nginx pada Frontend Container, lalu diteruskan secara internal ke `http://chatanalisis-backend:8001`.
 - Browser melihat seluruh response berasal dari **Origin Domain yang Sama** (*Same-Origin*), sehingga browser **TIDAK PERNAH** memblokir request karena isu CORS.
 
 ---
@@ -83,6 +83,6 @@ Browser Client / Internet
 | 1 | **Frontend FQDN** | `https://chatanalisis.domainanda.com` |
 | 2 | **Backend FQDN** | **Kosong** (Privat di internal Docker network) |
 | 3 | **Frontend Nginx** | Menggunakan `ChatAnalisis-FE/nginx.conf` |
-| 4 | **Backend Ports Expose** | `8000` |
+| 4 | **Backend Ports Expose** | `8001` |
 | 5 | **CORS Issue** | **0% (Bebas CORS secara alami)** |
 | 6 | **Volume Storage** | `backend_storage` ter-mount di `/app/storage` |

@@ -8,7 +8,7 @@ services:
     container_name: chatanalisis-backend
     # Expose port ke jaringan internal Docker, TIDAK dipublikasikan ke IP publik host
     expose:
-      - "8000"
+      - "8001"
     environment:
       - CORS_ORIGINS=["*"]
       - MAX_FILE_SIZE_MB=10
@@ -31,7 +31,7 @@ services:
       coolify: {}
 
   # ----------------------------------------------------
-  # Frontend Service (Vue 3 + Vite)
+  # Frontend Service (Vue 3 + Vite + Nginx Reverse Proxy)
   # ----------------------------------------------------
   frontend:
     build:
@@ -42,7 +42,7 @@ services:
     expose:
       - "80"
     ports:
-      - "${FRONTEND_PORT:-3000}:80"
+      - "${FRONTEND_PORT:-3000}:3000"
     restart: unless-stopped
     networks:
       chatanalisis-network:
