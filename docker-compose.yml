@@ -5,7 +5,6 @@ services:
   backend:
     build:
       context: ./ChatAnalisis-BE
-      network: host
     container_name: chatanalisis-backend
     # Expose port ke jaringan internal Docker, TIDAK dipublikasikan ke IP publik host
     expose:
@@ -38,7 +37,6 @@ services:
       context: ./ChatAnalisis-FE
       args:
         - VITE_API_BASE_URL=/
-      network: host
     container_name: chatanalisis-frontend
     ports:
       - "${FRONTEND_PORT:-3000}:80"
