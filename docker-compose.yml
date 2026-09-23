@@ -1,65 +1,29 @@
 services:
-  # ----------------------------------------------------
   # Backend Service (FastAPI)
-  # ----------------------------------------------------
   backend:
     build:
       context: ./ChatAnalisis-BE
-    container_name: chatanalisis-backend
-    # Expose port ke jaringan internal Docker, TIDAK dipublikasikan ke IP publik host
     expose:
-      - "8001"
+      - "8000"
     environment:
       - CORS_ORIGINS=["*"]
       - MAX_FILE_SIZE_MB=10
       - ZIP_MAX_EXTRACTED_MB=200
     volumes:
       - backend_data:/app/storage
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           count: 1
-    #           capabilities: [gpu]
     restart: unless-stopped
-    networks:
-      chatanalisis-network:
-        aliases:
-          - backend
-          - chatanalisis-backend
-      coolify: {}
 
-  # ----------------------------------------------------
   # Frontend Service (Vue 3 + Vite + Nginx Reverse Proxy)
-  # ----------------------------------------------------
   frontend:
     build:
       context: ./ChatAnalisis-FE
       args:
         - VITE_API_BASE_URL=/
-    container_name: chatanalisis-frontend
-    expose:
-      - "80"
     ports:
-      - "${FRONTEND_PORT:-3000}:3000"
+      - "${FRONTEND_PORT:-3000}:80"
     restart: unless-stopped
-    networks:
-      chatanalisis-network:
-        aliases:
-          - frontend
-          - chatanalisis-frontend
-      coolify: {}
     depends_on:
       - backend
 
 volumes:
   backend_data:
-    driver: local
-
-networks:
-  chatanalisis-network:
-    name: chatanalisis-network
-  coolify:
-    name: coolify
-    external: true

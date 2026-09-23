@@ -18,7 +18,7 @@ Browser Client / Internet
    └── Reverse Proxy Internal (/api & /analysis)
            │
            ▼ (Private Docker Network)
-  Backend Container (Port 8001: FastAPI) ──► Volume: backend_storage
+  Backend Container (Port 8000: FastAPI) ──► Volume: backend_storage
 ```
 
 ---
@@ -48,7 +48,7 @@ Browser Client / Internet
 ### 1️⃣ Deploy Backend Application (`ChatAnalisis-BE`)
 1. Di Dashboard Coolify, buat Resource baru ➔ Pilih Repository Git **`ChatAnalisis-BE`**.
 2. **Build Pack**: **Dockerfile**.
-3. **Ports Expose**: **`8001`**.
+3. **Ports Expose**: **`8000`**.
 4. **Domains (FQDN)**: **KOSONGKAN / KOSONG** (Backend tidak perlu diekspos ke publik sama sekali).
 5. **Settings ➔ Build Timeout**: Set ke **`1200` detik** (20 menit).
 6. **Storages**: Tambahkan Destination Volume:
@@ -71,7 +71,7 @@ Browser Client / Internet
 ## 🔥 Kenapa Pola Ini Bebas CORS 100%?
 
 - Browser pengguna **HANYA** mengirim request ke domain Frontend (`https://chatanalisis.domainanda.com`).
-- Semua panggilan API (`/api/results/...` dan `/analysis`) diterima oleh Nginx pada Frontend Container, lalu diteruskan secara internal ke `http://chatanalisis-backend:8001`.
+- Semua panggilan API (`/api/results/...` dan `/analysis`) diterima oleh Nginx pada Frontend Container, lalu diteruskan secara internal ke `http://chatanalisis-backend:8000`.
 - Browser melihat seluruh response berasal dari **Origin Domain yang Sama** (*Same-Origin*), sehingga browser **TIDAK PERNAH** memblokir request karena isu CORS.
 
 ---
@@ -83,6 +83,6 @@ Browser Client / Internet
 | 1 | **Frontend FQDN** | `https://chatanalisis.domainanda.com` |
 | 2 | **Backend FQDN** | **Kosong** (Privat di internal Docker network) |
 | 3 | **Frontend Nginx** | Menggunakan `ChatAnalisis-FE/nginx.conf` |
-| 4 | **Backend Ports Expose** | `8001` |
+| 4 | **Backend Ports Expose** | `8000` |
 | 5 | **CORS Issue** | **0% (Bebas CORS secara alami)** |
 | 6 | **Volume Storage** | `backend_storage` ter-mount di `/app/storage` |
