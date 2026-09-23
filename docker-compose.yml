@@ -19,8 +19,8 @@ services:
       context: ./ChatAnalisis-FE
       args:
         - VITE_API_BASE_URL=/
-    ports:
-      - "${FRONTEND_PORT:-3000}:80"
+    expose:
+      - "80"
     restart: unless-stopped
     depends_on:
       - backend
