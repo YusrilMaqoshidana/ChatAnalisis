@@ -10,7 +10,7 @@ services:
     expose:
       - "8000"
     environment:
-      - CORS_ORIGINS=["*"]
+      - CORS_ORIGINS=["https://chatanalisis.yusrilmaqoshidana.my.id"]
       - MAX_FILE_SIZE_MB=10
       - ZIP_MAX_EXTRACTED_MB=200
     volumes:
